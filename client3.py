@@ -32,17 +32,25 @@ N = 500
 def getDataPoint(quote):
     """ Produce all the needed values to generate a datapoint """
     """ ------------- Update this function ------------- """
+
+    """quote is json so has array in array which holds the value of bid_price, stock_price,ask_price"""
+    """stock_price is the average of ask_price and bid price"""
     stock = quote['stock']
     bid_price = float(quote['top_bid']['price'])
     ask_price = float(quote['top_ask']['price'])
-    price = bid_price
+    price = (bid_price + ask_price)/2
     return stock, bid_price, ask_price, price
 
 
 def getRatio(price_a, price_b):
     """ Get ratio of price_a and price_b """
     """ ------------- Update this function ------------- """
-    return 1
+
+    """Return the ratio of the two stocks"""
+    if(price_b!=0):
+        return (price_a/price_b)
+    else:
+        return
 
 
 # Main
@@ -52,8 +60,17 @@ if __name__ == "__main__":
         quotes = json.loads(urllib.request.urlopen(QUERY.format(random.random())).read())
 
         """ ----------- Update to get the ratio --------------- """
+
+        """Each time a new array of prices is created"""
+        prices={}
         for quote in quotes:
             stock, bid_price, ask_price, price = getDataPoint(quote)
+            """the quote object is sent to getDataPoint function, where we get all of the prices, by getting into the object"""
+            """4 items are returned 1.stock-name of the stock(in the object), 2. bid_price (in the object), 3. ask_prce(in the object), 4. price, which we calculate using bid_price and ask_price"""
+
+            """For every quote which contains two stocks, ABC and DEF, So store them in a dictionary as below"""
+            """It will hold stocks's names as name for the pair, and value as the corresponding price of the stock"""
+            prices[stock] = price
             print("Quoted %s at (bid:%s, ask:%s, price:%s)" % (stock, bid_price, ask_price, price))
 
-        print("Ratio %s" % getRatio(price, price))
+        print("Ratio %s" % getRatio(prices["ABC"], prices['DEF']))
